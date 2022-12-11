@@ -1,4 +1,4 @@
-# slambook
+# My Diary
 
 A new Flutter project.
 
