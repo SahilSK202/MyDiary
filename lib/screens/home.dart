@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:slambook/screens/theme.dart';
+import 'package:slambook/utils/user_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -12,7 +14,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   DateTime today = DateTime.now();
-  DateFormat dateFormat = DateFormat("dd MMMM yyyy");
+  DateFormat dateFormat = DateFormat("dd MMM yyyy");
+
+  Map<String, dynamic> _mySelectedEvents = {};
+
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       today = focusedDay;
@@ -20,8 +25,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (UserSimplePreferences.getNote() != "") {
+      _mySelectedEvents =
+          json.decode(UserSimplePreferences.getNote()) as Map<String, dynamic>;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(context), body: _content(context));
+    return Scaffold(
+      appBar: _buildAppBar(context),
+      body: _content(context),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _onClickAddNew(context),
+        icon: const Icon(Icons.add),
+        label: const Text("Add Note"),
+      ),
+    );
   }
 
   _buildAppBar(context) {
@@ -82,25 +104,54 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _content(context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        children: [
-          Text("Selected Day = ${dateFormat.format(today).toString()}"),
-          TableCalendar(
-            locale: "en_US",
-            rowHeight: 42,
-            headerStyle: const HeaderStyle(
-                formatButtonVisible: false, titleCentered: true),
-            availableGestures: AvailableGestures.all,
-            selectedDayPredicate: (day) => isSameDay(day, today),
-            focusedDay: today,
-            firstDay: DateTime(today.year, today.month - 3, today.day),
-            lastDay: DateTime(today.year, today.month + 3, today.day),
-            onDaySelected: _onDaySelected,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          color: const Color.fromARGB(255, 247, 193, 249),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              children: [
+                TableCalendar(
+                  locale: "en_US",
+                  rowHeight: 40,
+                  headerStyle: const HeaderStyle(
+                      formatButtonVisible: false, titleCentered: true),
+                  availableGestures: AvailableGestures.all,
+                  selectedDayPredicate: (day) => isSameDay(day, today),
+                  focusedDay: today,
+                  firstDay: DateTime(today.year, today.month - 3, today.day),
+                  lastDay: DateTime(today.year, today.month + 3, today.day),
+                  onDaySelected: _onDaySelected,
+                  eventLoader: _listOfEvents,
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            dateFormat.format(today).toString(),
+            style: const TextStyle(),
+          ),
+        ),
+      ],
     );
+  } // end function
+
+  _onClickAddNew(context) {
+    Navigator.pushNamed(context, '/addNote',
+        // MaterialPageRoute(builder: (context) => const AddNoteScreen()),
+        arguments: DateFormat("dd MMM yyyy").format(today).toString());
   }
-}
+
+  List _listOfEvents(DateTime dateTime) {
+    if (_mySelectedEvents[dateFormat.format(dateTime).toString()] != null) {
+      return _mySelectedEvents[dateFormat.format(dateTime).toString()];
+    } else {
+      return [];
+    }
+  }
+} // end class

@@ -14,15 +14,15 @@ class _ThemeScreenState extends State<ThemeScreen> {
       appBar: _buildAppBar(),
     );
   }
-}
 
-_buildAppBar() {
-  return AppBar(
-    centerTitle: true,
-    title: const Text(
-      "Select Theme",
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-    ),
-    automaticallyImplyLeading: true,
-  );
-}
+  _buildAppBar() {
+    return AppBar(
+      centerTitle: true,
+      title: const Text(
+        "Select Theme",
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+      ),
+      automaticallyImplyLeading: true,
+    );
+  } // end function
+} // end class
