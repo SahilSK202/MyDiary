@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          color: const Color.fromARGB(255, 247, 193, 249),
+          color: const Color.fromARGB(255, 201, 236, 248),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
@@ -137,6 +137,19 @@ class _HomeScreenState extends State<HomeScreen> {
             style: const TextStyle(),
           ),
         ),
+        _showNoNotesMessage(),
+        ..._listOfEvents(today).map(
+          (myEvents) => ListTile(
+            title: Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                  'Title: ${myEvents['eventTitle'].length > 50 ? '${myEvents['eventTitle'].substring(0, 50)} ...' : myEvents['eventTitle']}'),
+            ),
+            subtitle: Text(myEvents['eventDescription'].length > 120
+                ? '${myEvents['eventDescription'].substring(0, 120)} ...'
+                : myEvents['eventDescription']),
+          ),
+        ),
       ],
     );
   } // end function
@@ -153,5 +166,16 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       return [];
     }
+  }
+
+  Widget _showNoNotesMessage() {
+    if (_listOfEvents(today).isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(18.0),
+        child: Text(
+            'Writing is a good way to stop, take a step back and reflect on memories...'),
+      );
+    }
+    return const Text('');
   }
 } // end class
