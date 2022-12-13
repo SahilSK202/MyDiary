@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:slambook/widgets/theme_tile_view.dart';
 
 class ThemeScreen extends StatefulWidget {
@@ -37,9 +36,9 @@ class _ThemeScreenState extends State<ThemeScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: const [
+              ThemeTileView(color: Colors.black),
               ThemeTileView(color: Colors.deepPurple),
-              ThemeTileView(color: Colors.red),
-              ThemeTileView(color: Colors.green),
+              ThemeTileView(color: Colors.indigo),
             ],
           ),
         ),

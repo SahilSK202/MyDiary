@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          color: const Color.fromARGB(255, 201, 236, 248),
+          // color: const Color.fromARGB(255, 201, 236, 248),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(

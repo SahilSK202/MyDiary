@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:slambook/constants/themes.dart';
 import 'package:slambook/screens/add_note.dart';
+import 'package:slambook/utils/theme_notifier.dart';
 import 'package:slambook/utils/user_preferences.dart';
 import 'screens/home.dart';
 
@@ -7,7 +10,20 @@ import 'screens/home.dart';
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await UserSimplePreferences.init();
-  runApp(const MyApp());
+  var themeColor = UserSimplePreferences.getTheme();
+  if (themeColor == Colors.black.toString()) {
+    activeTheme = darkBlackTheme;
+  } else if (themeColor == Colors.blue.toString()) {
+    activeTheme = lightBlueTheme;
+  }
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+        create: (context) => ThemeNotifier(activeTheme),
+      )
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,7 +31,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return MaterialApp(
+      theme: themeNotifier.getTheme,
       routes: {'/addNote': (context) => const AddNoteScreen()},
       debugShowCheckedModeBanner: false,
       home: const HomeScreen(),
