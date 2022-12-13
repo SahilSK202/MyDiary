@@ -24,6 +24,7 @@ class AddNoteScreen extends StatefulWidget {
 class _AddNoteScreenState extends State<AddNoteScreen> {
   int _index = -1;
   bool _isNewNote = false;
+  bool _enableForm = false;
   String _selectedDay = "";
   String _selectedTitle = "";
   String _selectedDescription = "";
@@ -54,6 +55,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
       _index = arguments['index'] ?? -1;
       _isNewNote = _index == -1;
+      _enableForm = _enableForm == true ? _enableForm : _isNewNote;
+      // _enableForm = _isNewNote;
       _selectedTitle = arguments['selectedTitle'] ?? "";
       _selectedDescription = arguments['selectedDescription'] ?? "";
       _titleController.text = _selectedTitle;
@@ -85,12 +88,23 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       ),
       automaticallyImplyLeading: true,
       actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.add_a_photo),
-          onPressed: () {
-            // Navigator.pop(context);
-          },
-        ),
+        _isNewNote || _enableForm
+            ? (IconButton(
+                icon: const Icon(Icons.add_a_photo),
+                onPressed: () {
+                  // Navigator.pop(context);
+                },
+              ))
+            : (IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  setState(() {
+                    _enableForm = true;
+                  });
+
+                  // Navigator.pop(context);
+                },
+              )),
         Padding(
           padding: const EdgeInsets.all(12.0),
           child: ElevatedButton(
@@ -113,6 +127,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             ),
           ),
         ),
+        _popupMenu()
       ],
     );
   } // end function
@@ -126,6 +141,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         children: [
           Text(_selectedDay),
           TextField(
+            enabled: _enableForm,
             controller: _titleController,
             textCapitalization: TextCapitalization.words,
             keyboardType: TextInputType.multiline,
@@ -139,6 +155,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           ),
           Expanded(
             child: TextField(
+              enabled: _enableForm,
               controller: _descriptionController,
               textCapitalization: TextCapitalization.words,
               keyboardType: TextInputType.multiline,
@@ -191,6 +208,42 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         ];
       }
       UserSimplePreferences.setNote(_mySelectedEvents);
+    }
+  }
+
+  _popupMenu() {
+    return PopupMenuButton<int>(
+      itemBuilder: (context) => [
+        if (!_isNewNote) ...[
+          const PopupMenuItem<int>(
+            value: 0,
+            child: Text("Delete"),
+          ),
+        ],
+        const PopupMenuItem<int>(
+          value: 1,
+          child: Text("Share"),
+        ),
+      ],
+      onSelected: (item) => _selectedItem(context, item),
+    );
+  }
+
+  void _selectedItem(BuildContext context, item) {
+    switch (item) {
+      case 0:
+        _mySelectedEvents[_selectedDay]
+            .remove(_mySelectedEvents[_selectedDay][_index]);
+
+        UserSimplePreferences.setNote(_mySelectedEvents);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+        break;
+      case 1:
+        print("Share Clicked");
+        break;
     }
   }
 } // end class
