@@ -5,15 +5,28 @@ import 'package:slambook/screens/home.dart';
 import 'package:slambook/utils/user_preferences.dart';
 
 class AddNoteScreen extends StatefulWidget {
+  final int? index;
   final String? selectedDay;
-  const AddNoteScreen({Key? key, this.selectedDay}) : super(key: key);
+  final String? selectedTitle;
+  final String? selectedDescription;
+  const AddNoteScreen(
+      {Key? key,
+      this.index,
+      this.selectedDay,
+      this.selectedTitle,
+      this.selectedDescription})
+      : super(key: key);
 
   @override
   State<AddNoteScreen> createState() => _AddNoteScreenState();
 }
 
 class _AddNoteScreenState extends State<AddNoteScreen> {
+  int _index = -1;
+  bool _isNewNote = false;
   String _selectedDay = "";
+  String _selectedTitle = "";
+  String _selectedDescription = "";
   DateTime today = DateTime.now();
   DateFormat dateFormat = DateFormat("dd MMM yyyy");
   final _titleController = TextEditingController();
@@ -32,9 +45,22 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _selectedDay = ModalRoute.of(context)!.settings.arguments == null
-        ? DateFormat("dd MMM yyyy").format(today).toString()
-        : ModalRoute.of(context)!.settings.arguments as String;
+    if (ModalRoute.of(context)!.settings.arguments != null) {
+      final arguments = ModalRoute.of(context)!.settings.arguments as Map;
+
+      _selectedDay = arguments['selectedDay'] == null
+          ? DateFormat("dd MMM yyyy").format(today).toString()
+          : arguments['selectedDay'] as String;
+
+      _index = arguments['index'] ?? -1;
+      _isNewNote = _index == -1;
+      _selectedTitle = arguments['selectedTitle'] ?? "";
+      _selectedDescription = arguments['selectedDescription'] ?? "";
+      _titleController.text = _selectedTitle;
+      _descriptionController.text = _selectedDescription;
+    } else {
+      _selectedDay = DateFormat("dd MMM yyyy").format(today).toString();
+    }
 
     return Scaffold(
       appBar: _buildAppBar(context),
@@ -143,10 +169,19 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       return;
     } else {
       if (_mySelectedEvents[_selectedDay] != null) {
-        _mySelectedEvents[_selectedDay]?.add({
-          "eventTitle": _titleController.text,
-          "eventDescription": _descriptionController.text,
-        });
+        //check if title is same and update the note
+
+        if (!_isNewNote) {
+          _mySelectedEvents[_selectedDay][_index] = {
+            "eventTitle": _titleController.text,
+            "eventDescription": _descriptionController.text,
+          };
+        } else {
+          _mySelectedEvents[_selectedDay]?.add({
+            "eventTitle": _titleController.text,
+            "eventDescription": _descriptionController.text,
+          });
+        }
       } else {
         _mySelectedEvents[_selectedDay] = [
           {

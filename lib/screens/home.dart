@@ -139,15 +139,28 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         _showNoNotesMessage(),
         ..._listOfEvents(today).map(
-          (myEvents) => ListTile(
-            title: Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                  'Title: ${myEvents['eventTitle'].length > 50 ? '${myEvents['eventTitle'].substring(0, 50)} ...' : myEvents['eventTitle']}'),
+          (myEvents) => Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+                // side: const BorderSide(
+                //   color: Colors.black,
+                // ),
+              ),
+              title: Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                    'Title: ${myEvents['eventTitle'].length > 50 ? '${myEvents['eventTitle'].substring(0, 50)} ...' : myEvents['eventTitle']}'),
+              ),
+              subtitle: Text(myEvents['eventDescription'].length > 120
+                  ? '${myEvents['eventDescription'].substring(0, 120)} ...'
+                  : myEvents['eventDescription']),
+              onTap: () => {
+                _onTapNote(_listOfEvents(today).indexOf(myEvents),
+                    myEvents['eventTitle'], myEvents['eventDescription'])
+              },
             ),
-            subtitle: Text(myEvents['eventDescription'].length > 120
-                ? '${myEvents['eventDescription'].substring(0, 120)} ...'
-                : myEvents['eventDescription']),
           ),
         ),
       ],
@@ -157,7 +170,12 @@ class _HomeScreenState extends State<HomeScreen> {
   _onClickAddNew(context) {
     Navigator.pushNamed(context, '/addNote',
         // MaterialPageRoute(builder: (context) => const AddNoteScreen()),
-        arguments: DateFormat("dd MMM yyyy").format(today).toString());
+        arguments: {
+          'index': null,
+          'selectedDay': DateFormat("dd MMM yyyy").format(today).toString(),
+          'selectedTitle': null,
+          'selectedDescription': null,
+        });
   }
 
   List _listOfEvents(DateTime dateTime) {
@@ -177,5 +195,16 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
     return const Text('');
+  }
+
+  _onTapNote(int index, String selectedTitle, String selectedDescription) {
+    Navigator.pushNamed(context, '/addNote',
+        // MaterialPageRoute(builder: (context) => const AddNoteScreen()),
+        arguments: {
+          'index': index,
+          'selectedDay': DateFormat("dd MMM yyyy").format(today).toString(),
+          'selectedTitle': selectedTitle,
+          'selectedDescription': selectedDescription,
+        });
   }
 } // end class
