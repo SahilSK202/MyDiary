@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:slambook/screens/home.dart';
@@ -34,6 +36,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   final _descriptionController = TextEditingController();
 
   Map<String, dynamic> _mySelectedEvents = {};
+
+  // Variables for image imports
+  File? selectedImage;
+  String base64Image = "";
 
   @override
   void initState() {
@@ -91,7 +97,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             ? (IconButton(
                 icon: const Icon(Icons.add_a_photo),
                 onPressed: () {
-                  // Navigator.pop(context);
+                  chooseImage("Camera");
                 },
               ))
             : (IconButton(
@@ -153,6 +159,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               focusedBorder: InputBorder.none,
             ),
           ),
+          // Function to display picked images from gallery / camera
+          // _displayImages(),
           Expanded(
             child: TextField(
               enabled: _enableForm,
@@ -249,5 +257,52 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         print("Share Clicked");
         break;
     }
+  }
+
+  // Function to upload image
+  Future<void> chooseImage(type) async {
+    // ignore: prefer_typing_uninitialized_variables
+    final ImagePicker picker = ImagePicker();
+    XFile? image;
+    if (type == "camera") {
+      image =
+          await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
+    } else {
+      image =
+          await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    }
+    if (image != null) {
+      setState(() {
+        selectedImage = File(image!.path);
+        base64Image = base64Encode(selectedImage!.readAsBytesSync());
+      });
+    }
+  }
+
+  _displayImages() {
+    Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: CircleAvatar(
+        radius: 60,
+        backgroundColor: Colors.red,
+        child: Padding(
+          padding: const EdgeInsets.all(8), // Border radius
+          child: ClipOval(
+              child: selectedImage != null
+                  ? Image.file(
+                      selectedImage!,
+                      fit: BoxFit.cover,
+                      height: 100,
+                      width: 100,
+                    )
+                  : Image.network(
+                      'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg',
+                      fit: BoxFit.cover,
+                      height: 100,
+                      width: 100,
+                    )),
+        ),
+      ),
+    );
   }
 } // end class
