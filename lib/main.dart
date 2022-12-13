@@ -3,10 +3,9 @@ import 'package:slambook/screens/add_note.dart';
 import 'package:slambook/utils/user_preferences.dart';
 import 'screens/home.dart';
 
+// Function to initialize shared_preferences before running the app.
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await SystemChrome.setPreferredOrientations(
-  //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   await UserSimplePreferences.init();
   runApp(const MyApp());
 }

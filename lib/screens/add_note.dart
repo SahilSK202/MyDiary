@@ -38,6 +38,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   @override
   void initState() {
     super.initState();
+    // Fetching previous events from shared_preferences
     if (UserSimplePreferences.getNote() != "") {
       _mySelectedEvents =
           json.decode(UserSimplePreferences.getNote()) as Map<String, dynamic>;
@@ -46,6 +47,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetching arguments from home page
     if (ModalRoute.of(context)!.settings.arguments != null) {
       final arguments = ModalRoute.of(context)!.settings.arguments as Map;
 
@@ -56,7 +58,6 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       _index = arguments['index'] ?? -1;
       _isNewNote = _index == -1;
       _enableForm = _enableForm == true ? _enableForm : _isNewNote;
-      // _enableForm = _isNewNote;
       _selectedTitle = arguments['selectedTitle'] ?? "";
       _selectedDescription = arguments['selectedDescription'] ?? "";
       _titleController.text = _selectedTitle;
@@ -71,18 +72,16 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
+  // Function to build the App Bar of the Add Note page
   _buildAppBar(context) {
     return AppBar(
       centerTitle: true,
+      // Make app bar transparent for themes
       // backgroundColor: Colors.transparent,
       // elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.close),
         onPressed: () {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => const HomeScreen()),
-          // );
           Navigator.pop(context);
         },
       ),
@@ -132,6 +131,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
   } // end function
 
+  // Function to render content of the Add Note page
   _content(context) {
     return Padding(
       padding: const EdgeInsets.all(18.0),
@@ -173,7 +173,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
+  // Function to save the note in map and map in shared_preferences
   _saveNote(context) {
+    // Handle saving empty notes
     if (_titleController.text.isEmpty && _descriptionController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -186,8 +188,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       return;
     } else {
       if (_mySelectedEvents[_selectedDay] != null) {
-        //check if title is same and update the note
-
+        //check if note is new then update else add new
         if (!_isNewNote) {
           _mySelectedEvents[_selectedDay][_index] = {
             "eventTitle": _titleController.text,
@@ -200,6 +201,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           });
         }
       } else {
+        // Add New note for new date if not already present
         _mySelectedEvents[_selectedDay] = [
           {
             "eventTitle": _titleController.text,
@@ -211,6 +213,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     }
   }
 
+  // Function to manage PopupMenu
   _popupMenu() {
     return PopupMenuButton<int>(
       itemBuilder: (context) => [
@@ -229,6 +232,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
+  // Function to handle actions performed by popup menu items.
   void _selectedItem(BuildContext context, item) {
     switch (item) {
       case 0:

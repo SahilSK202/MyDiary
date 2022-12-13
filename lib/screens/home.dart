@@ -16,17 +16,13 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime today = DateTime.now();
   DateFormat dateFormat = DateFormat("dd MMM yyyy");
 
+  // Map to store Notes as events in the calendar
   Map<String, dynamic> _mySelectedEvents = {};
-
-  void _onDaySelected(DateTime day, DateTime focusedDay) {
-    setState(() {
-      today = focusedDay;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
+    // Fetching previous events from shared_preferences
     if (UserSimplePreferences.getNote() != "") {
       _mySelectedEvents =
           json.decode(UserSimplePreferences.getNote()) as Map<String, dynamic>;
@@ -46,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Function to build the App Bar of the home page
   _buildAppBar(context) {
     return AppBar(
       centerTitle: true,
@@ -103,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Function to render content of the home page
   Widget _content(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,9 +142,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListTile(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
-                // side: const BorderSide(
-                //   color: Colors.black,
-                // ),
               ),
               title: Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -167,25 +162,33 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   } // end function
 
-  _onClickAddNew(context) {
-    Navigator.pushNamed(context, '/addNote',
-        // MaterialPageRoute(builder: (context) => const AddNoteScreen()),
-        arguments: {
-          'index': null,
-          'selectedDay': DateFormat("dd MMM yyyy").format(today).toString(),
-          'selectedTitle': null,
-          'selectedDescription': null,
-        });
-  }
+  // Function to set focus on the selected date on calendar.
+  void _onDaySelected(DateTime day, DateTime focusedDay) {
+    setState(() {
+      today = focusedDay;
+    });
+  } // end function
 
+  // Function to handle event when clicked on Add New button
+  _onClickAddNew(context) {
+    Navigator.pushNamed(context, '/addNote', arguments: {
+      'index': null,
+      'selectedDay': DateFormat("dd MMM yyyy").format(today).toString(),
+      'selectedTitle': null,
+      'selectedDescription': null,
+    });
+  } // end function
+
+  // Function to return list of notes for the selected day
   List _listOfEvents(DateTime dateTime) {
     if (_mySelectedEvents[dateFormat.format(dateTime).toString()] != null) {
       return _mySelectedEvents[dateFormat.format(dateTime).toString()];
     } else {
       return [];
     }
-  }
+  } // end function
 
+  // Function to display message if no events present for selected day
   Widget _showNoNotesMessage() {
     if (_listOfEvents(today).isEmpty) {
       return const Padding(
@@ -195,16 +198,15 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
     return const Text('');
-  }
+  } // end function
 
+  // Function to handle the on Tap note for read and edit operations
   _onTapNote(int index, String selectedTitle, String selectedDescription) {
-    Navigator.pushNamed(context, '/addNote',
-        // MaterialPageRoute(builder: (context) => const AddNoteScreen()),
-        arguments: {
-          'index': index,
-          'selectedDay': DateFormat("dd MMM yyyy").format(today).toString(),
-          'selectedTitle': selectedTitle,
-          'selectedDescription': selectedDescription,
-        });
-  }
+    Navigator.pushNamed(context, '/addNote', arguments: {
+      'index': index,
+      'selectedDay': DateFormat("dd MMM yyyy").format(today).toString(),
+      'selectedTitle': selectedTitle,
+      'selectedDescription': selectedDescription,
+    });
+  } // end function
 } // end class
