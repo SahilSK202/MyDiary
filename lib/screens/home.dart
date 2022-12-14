@@ -112,6 +112,25 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 TableCalendar(
+                  calendarBuilders:
+                      CalendarBuilders(markerBuilder: (context, today, events) {
+                    return _listOfEvents(today).isNotEmpty
+                        ? Container(
+                            width: 15,
+                            height: 12,
+                            decoration: BoxDecoration(
+                                color: Colors.amber,
+                                borderRadius: BorderRadius.circular(4)),
+                            child: Center(
+                              child: Text(
+                                _listOfEvents(today).length.toString(),
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 8),
+                              ),
+                            ),
+                          )
+                        : Container();
+                  }),
                   locale: "en_US",
                   rowHeight: 40,
                   headerStyle: const HeaderStyle(
@@ -129,9 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(16.0),
           child: Text(
-            dateFormat.format(today).toString(),
+            DateFormat('EEEE, dd MMMM yyyy').format(today).toString(),
             style: const TextStyle(),
           ),
         ),

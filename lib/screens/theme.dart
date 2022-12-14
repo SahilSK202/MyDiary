@@ -37,19 +37,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: const [
               ThemeTileView(color: Colors.black),
-              ThemeTileView(color: Colors.deepPurple),
-              ThemeTileView(color: Colors.indigo),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 24.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
-              ThemeTileView(color: Colors.pink),
               ThemeTileView(color: Colors.blue),
-              ThemeTileView(color: Colors.orange),
+              // ThemeTileView(color: Colors.indigo),
             ],
           ),
         ),
